@@ -2,7 +2,7 @@ require 'socket'
 
 
 def get(path)
-  request = "GET #{path} HTTP/1.1\r\nHost: localhost:1058\r\n\r\n"
+  request = "GET #{path} HTTP/1.1\r\nHost: localhost:1058\r\n\r\n\0"
   return request
 end
 
@@ -37,17 +37,15 @@ elsif action == 'POST'
   hash[:viking][:name] = gets.chomp.strip
   print 'Введите email '
   hash[:viking][:email] = gets.chomp.strip
-  request = post(path, hash[:viking])
+  request = post('/thanks.html', hash[:viking])
 end
 
 client.puts(request)
+client.close_write
 
-while line = client.gets.chomp
-
-  puts line
+while !(p = client.gets).nil?
+  puts p
 end
-
-
 
 client.close
 

@@ -13,22 +13,24 @@ port = 2000
 server = TCPServer.open(port)
 
 loop do
+  Thread.start(server.accept) do |client|
 
-  $client = server.accept
-  request = ''
-  request << $client.gets
-  while line = $client.gets
-    request << line
+    request = ''
+
+
+    while line = client.gets
+      request << line
+    end
+    client.close_read
+
+    next if request.nil?
+    request = parse_request(request)
+
+    response = response(request)
+
+    client.puts(response)
+    client.close_write
   end
-
-  $client.puts('hello')
-  next if request.nil?
-  request = parse_request(request)
-
-  response = response(request)
-
-  $client.puts(response[0])
-  $client.close
 
 end
 
